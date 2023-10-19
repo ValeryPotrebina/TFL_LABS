@@ -17,7 +17,7 @@ export function printAutomata(automata: Automata) {
   const finalLine = `FINAL: ${automata.final.join(' ')}`
   const alphabetLine = `ALPHABET: ${automata.alphabet.join(' ')}`
   //размер колонок
-  const columnSizes = automata.map.map(e => Math.max(...automata.alphabet.map(symbol => e[symbol] != undefined ? Math.max(e[symbol].length, 1) : 1))).map(e => (e - 1) * 2 + 1)
+  const columnSizes = automata.alphabet.map(symbol => Math.max(...automata.map.map(e => e[symbol] != undefined ? e[symbol].join(',').length : 1)) + 1)
   //заголовок (алфавит)
   const header = `TABLE: \n${addLeadingSpaces('\\', (automata.states - 1).toString().length)} | ${automata.alphabet.map((e, i) => addLeadingSpaces(e, columnSizes[i])).join(' | ')}`
   //строки таблицы
@@ -40,16 +40,21 @@ export function makeAutomata(tree: Tree, alphabet: string[]): Automata {
       map: [{}, {}]
     }
     res.map[0][tree.value] = [1]
+    logAutomata(res, `Symbol(${tree.value})`)
     return res
   }
   if (tree.type == TreeType.ITERATION) {
-    return iterateAutomata(makeAutomata(tree.children[0], alphabet))
+    const iter = iterateAutomata(makeAutomata(tree.children[0], alphabet))
+    logAutomata(iter, `ITER`)
+    return iter
   }
   if (tree.type == TreeType.OR) {
     let aut = unionAutomata(makeAutomata(tree.children[0], alphabet), makeAutomata(tree.children[1], alphabet))
     for (let i = 2; i < tree.children.length; i++) {
       aut = unionAutomata(aut, makeAutomata(tree.children[i], alphabet))
     }
+
+    logAutomata(aut, `OR`)
     return aut
   }
   if (tree.type == TreeType.CONCAT) {
@@ -66,6 +71,7 @@ export function makeAutomata(tree: Tree, alphabet: string[]): Automata {
       for (let i = 1; i < tree.children.length; i++) {
         automata = concatAutomata(automata, makeAutomata(tree.children[i], alphabet))
       }
+      logAutomata(automata, `CONCAT`)
       return automata
     }
     const lookaheadEndIdx = lookaheadStartIdx + findIndexFix(tree.children.slice(lookaheadStartIdx), e => e.type != TreeType.LOOKAHEAD)
@@ -76,22 +82,32 @@ export function makeAutomata(tree: Tree, alphabet: string[]): Automata {
       value: '',
       children: beforeSlice
     }, alphabet)
+
+    logAutomata(beforeAutomata, `BEFORE`)
     const afterAutomata = makeAutomata({
       type: TreeType.CONCAT,
       value: '',
       children: afterSlice
     }, alphabet)
+    logAutomata(afterAutomata, `AFTER`)
     let lookaheadAutomata = makeAutomata(tree.children[lookaheadStartIdx], alphabet)
     for (let i = lookaheadStartIdx + 1; i < lookaheadEndIdx; i++) {
       lookaheadAutomata = intersectAutomata(lookaheadAutomata, makeAutomata(tree.children[i], alphabet))
     }
+    logAutomata(lookaheadAutomata, `LOOKAHEAD_INTER`)
     // if(!lookaheadAutomata.final.length) throw new ParsingError("LOOKAHEAD CONCAT DOESNT EXIST!")
     const intersection = intersectAutomata(lookaheadAutomata, afterAutomata)
+    logAutomata(intersection, `INTERSECT`)
     // if(!intersection.final.length) throw new ParsingError("LOOKAHEAD OVERLAP DOESNT EXIST!")
-    return concatAutomata(beforeAutomata, intersection)
+    const concat = concatAutomata(beforeAutomata, intersection)
+
+    logAutomata(concat, `LOOKAHEAD_CONCAT`)
+    return concat
   }
   if (tree.type == TreeType.LOOKAHEAD) {
     const automata = makeAutomata(tree.children[0], alphabet)
+
+    logAutomata(tree.value == '$' ? automata : addEndIteration(automata, alphabet), `LOOKAHEAD`)
     return tree.value == '$' ? automata : addEndIteration(automata, alphabet)
   }
   throw new ParsingError("UNABLE TO CREATE AUTOMATA!")
@@ -334,14 +350,25 @@ export function minimizeAtomata(aut: Automata): Automata {
   aut.alphabet.forEach(symbol => {
     if (aut.map.find(e => e[symbol] && [symbol]?.length > 1)) throw new ParsingError("CANT MINIMIZE NON-DETERM AUTOMATA")
   })
-  const classes: StateClass[] = Array.from(Array(aut.states)).map((_, i) => ({ state: i, class: aut.final.includes(i) ? 1 : 0 }))
-  let classesCount = 2
+  const classes: StateClass[] = []
+  let classesCount = 0
+  const notFinal = Array.from(Array(aut.states).keys()).filter(e => !aut.final.includes(e))
+  if (notFinal.length) {
+    classes.push(...notFinal.map(e => ({ state: e, class: classesCount })))
+    classesCount++
+  }
+  if (aut.final.length) {
+    classes.push(...aut.final.map(e => ({ state: e, class: classesCount })))
+    classesCount++
+  }
+  classes.sort((a, b) => a.state - b.state)
 
   for (let reconstruct = true; reconstruct;) {
     reconstruct = false
     for (let i = 0; i < classesCount; i++) {
       if (reconstruct) break
       for (let symbolIdx = 0; symbolIdx < aut.alphabet.length; symbolIdx++) {
+        if (reconstruct) break
         const symbol = aut.alphabet[symbolIdx]
         const classStates = classes.filter(v => v.class == i)
         const splitDict: { [key: number]: number[] } = {}

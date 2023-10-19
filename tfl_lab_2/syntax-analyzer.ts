@@ -34,6 +34,7 @@ export class SyntaxAnalyzer{
   public parse(){
     const tree = this.parseInit()
     while(this.simplify(tree)){}
+    while(this.lookaheadConcatCreate(tree)){}
     return tree
   }
 
@@ -41,10 +42,33 @@ export class SyntaxAnalyzer{
     const stack: Tree[] = [tree]
     while(stack.length){
       const current = stack.pop()!
-      if((current.type == TreeType.CONCAT || current.type == TreeType.OR) && current.children[current.children.length - 1].type == current.type){
-        const toAppend = current.children[current.children.length - 1].children
-        current.children = [...current.children.slice(0, current.children.length - 1), ...toAppend]
-        return true
+      if((current.type == TreeType.CONCAT || current.type == TreeType.OR)){
+        const sameTypeIdx = current.children.findIndex(e => e.type == current.type) 
+        if(sameTypeIdx >= 0){
+          const toAppend = current.children[sameTypeIdx].children
+          current.children = [...current.children.slice(0, sameTypeIdx), ...toAppend, ...current.children.slice(sameTypeIdx+1)]
+          return true
+        }
+      }
+      current?.children.forEach(e => {
+        if(e.children.length != 0) stack.push(e)
+      })
+    }
+    return false
+  }
+
+  private lookaheadConcatCreate(tree: Tree){
+    const stack: Tree[] = [tree]
+    while(stack.length){
+      const current = stack.pop()!
+      if(current.type != TreeType.CONCAT){
+        const lookahead = current.children.find(e => e.type == TreeType.LOOKAHEAD)
+        if(lookahead){
+          const lookaheadCopy = JSON.parse(JSON.stringify(lookahead)) as Tree
+          lookahead.type = TreeType.CONCAT
+          lookahead.children = [lookaheadCopy]
+          return true
+        }
       }
       current?.children.forEach(e => {
         if(e.children.length != 0) stack.push(e)

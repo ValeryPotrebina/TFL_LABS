@@ -13,6 +13,82 @@ LEXEMS():
     "value": ""
   },
   {
+    "type": "OPEN_BRACKET",
+    "value": ""
+  },
+  {
+    "type": "LOOKAHEAD_BEGIN",
+    "value": ""
+  },
+  {
+    "type": "OPEN_BRACKET",
+    "value": ""
+  },
+  {
+    "type": "OPEN_BRACKET",
+    "value": ""
+  },
+  {
+    "type": "OPEN_BRACKET",
+    "value": ""
+  },
+  {
+    "type": "OPEN_BRACKET",
+    "value": ""
+  },
+  {
+    "type": "SYMBOL",
+    "value": "a"
+  },
+  {
+    "type": "OPEN_BRACKET",
+    "value": ""
+  },
+  {
+    "type": "SYMBOL",
+    "value": "a"
+  },
+  {
+    "type": "ITERATION",
+    "value": ""
+  },
+  {
+    "type": "OR",
+    "value": ""
+  },
+  {
+    "type": "SYMBOL",
+    "value": "c"
+  },
+  {
+    "type": "ITERATION",
+    "value": ""
+  },
+  {
+    "type": "CLOSE_BRACKET",
+    "value": ""
+  },
+  {
+    "type": "CLOSE_BRACKET",
+    "value": ""
+  },
+  {
+    "type": "SYMBOL",
+    "value": "b"
+  },
+  {
+    "type": "OR",
+    "value": ""
+  },
+  {
+    "type": "SYMBOL",
+    "value": "b"
+  },
+  {
+    "type": "CLOSE_BRACKET",
+    "value": ""
+  },
+  {
     "type": "SYMBOL",
     "value": "b"
   },
@@ -21,11 +97,7 @@ LEXEMS():
     "value": ""
   },
   {
-    "type": "OR",
-    "value": ""
-  },
-  {
-    "type": "OPEN_BRACKET",
+    "type": "CLOSE_BRACKET",
     "value": ""
   },
   {
@@ -35,10 +107,6 @@ LEXEMS():
   {
     "type": "SYMBOL",
     "value": "a"
-  },
-  {
-    "type": "ITERATION",
-    "value": ""
   },
   {
     "type": "CLOSE_BRACKET",
@@ -65,27 +133,7 @@ LEXEMS():
     "value": ""
   },
   {
-    "type": "CLOSE_BRACKET",
-    "value": ""
-  },
-  {
-    "type": "OPEN_BRACKET",
-    "value": ""
-  },
-  {
-    "type": "SYMBOL",
-    "value": "a"
-  },
-  {
-    "type": "ITERATION",
-    "value": ""
-  },
-  {
-    "type": "CLOSE_BRACKET",
-    "value": ""
-  },
-  {
-    "type": "ITERATION",
+    "type": "LINE_END",
     "value": ""
   },
   {
@@ -101,11 +149,55 @@ LEXEMS():
     "value": ""
   },
   {
+    "type": "OPEN_BRACKET",
+    "value": ""
+  },
+  {
+    "type": "OPEN_BRACKET",
+    "value": ""
+  },
+  {
+    "type": "SYMBOL",
+    "value": "d"
+  },
+  {
+    "type": "ITERATION",
+    "value": ""
+  },
+  {
+    "type": "CLOSE_BRACKET",
+    "value": ""
+  },
+  {
+    "type": "CLOSE_BRACKET",
+    "value": ""
+  },
+  {
+    "type": "LINE_END",
+    "value": ""
+  },
+  {
+    "type": "CLOSE_BRACKET",
+    "value": ""
+  },
+  {
+    "type": "CLOSE_BRACKET",
+    "value": ""
+  },
+  {
+    "type": "OPEN_BRACKET",
+    "value": ""
+  },
+  {
     "type": "SYMBOL",
     "value": "a"
   },
   {
     "type": "ITERATION",
+    "value": ""
+  },
+  {
+    "type": "CLOSE_BRACKET",
     "value": ""
   },
   {
@@ -124,28 +216,83 @@ TREE():
   "value": "",
   "children": [
     {
-      "type": "CONCAT",
-      "value": "",
+      "type": "LOOKAHEAD",
+      "value": "$",
       "children": [
         {
           "type": "OR",
           "value": "",
           "children": [
             {
-              "type": "ITERATION",
+              "type": "CONCAT",
               "value": "",
               "children": [
                 {
-                  "type": "SYMBOL",
-                  "value": "b",
-                  "children": []
-                }
-              ]
-            },
-            {
-              "type": "ITERATION",
-              "value": "",
-              "children": [
+                  "type": "OR",
+                  "value": "",
+                  "children": [
+                    {
+                      "type": "CONCAT",
+                      "value": "",
+                      "children": [
+                        {
+                          "type": "SYMBOL",
+                          "value": "a",
+                          "children": []
+                        },
+                        {
+                          "type": "OR",
+                          "value": "",
+                          "children": [
+                            {
+                              "type": "ITERATION",
+                              "value": "",
+                              "children": [
+                                {
+                                  "type": "SYMBOL",
+                                  "value": "a",
+                                  "children": []
+                                }
+                              ]
+                            },
+                            {
+                              "type": "ITERATION",
+                              "value": "",
+                              "children": [
+                                {
+                                  "type": "SYMBOL",
+                                  "value": "c",
+                                  "children": []
+                                }
+                              ]
+                            }
+                          ]
+                        },
+                        {
+                          "type": "SYMBOL",
+                          "value": "b",
+                          "children": []
+                        }
+                      ]
+                    },
+                    {
+                      "type": "SYMBOL",
+                      "value": "b",
+                      "children": []
+                    }
+                  ]
+                },
+                {
+                  "type": "ITERATION",
+                  "value": "",
+                  "children": [
+                    {
+                      "type": "SYMBOL",
+                      "value": "b",
+                      "children": []
+                    }
+                  ]
+                },
                 {
                   "type": "ITERATION",
                   "value": "",
@@ -171,29 +318,12 @@ TREE():
               ]
             }
           ]
-        },
-        {
-          "type": "ITERATION",
-          "value": "",
-          "children": [
-            {
-              "type": "ITERATION",
-              "value": "",
-              "children": [
-                {
-                  "type": "SYMBOL",
-                  "value": "a",
-                  "children": []
-                }
-              ]
-            }
-          ]
         }
       ]
     },
     {
       "type": "LOOKAHEAD",
-      "value": "",
+      "value": "$",
       "children": [
         {
           "type": "ITERATION",
@@ -201,35 +331,388 @@ TREE():
           "children": [
             {
               "type": "SYMBOL",
-              "value": "a",
+              "value": "d",
               "children": []
             }
           ]
+        }
+      ]
+    },
+    {
+      "type": "ITERATION",
+      "value": "",
+      "children": [
+        {
+          "type": "SYMBOL",
+          "value": "a",
+          "children": []
         }
       ]
     }
   ]
 }
 
-AUTOMATA(regexAutomata): 
-STATES: 0 1
+AUTOMATA(BEFORE): 
+STATES: 0
 INIT: 0
-FINAL: 0 1
-ALPHABET: b a
+FINAL: 0
+ALPHABET: 
 TABLE: 
-\ | b | a
------------------
-0 | 0 | 1
-1 |   | 1
+\ | 
+------------
+0 | 
 
-AUTOMATA(minimized): 
+AUTOMATA(Symbol(a)): 
 STATES: 0 1
 INIT: 0
-FINAL: 0 1
-ALPHABET: b a
+FINAL: 1
+ALPHABET: a
 TABLE: 
-\ | b | a
------------------
-0 | 0 | 1
-1 |   | 1
+\ |  a
+--------------
+0 |  1
+1 |   
+
+AUTOMATA(ITER): 
+STATES: 0 1
+INIT: 0
+FINAL: 1 0
+ALPHABET: a
+TABLE: 
+\ |  a
+--------------
+0 |  1
+1 |  1
+
+AUTOMATA(CONCAT): 
+STATES: 0 1
+INIT: 0
+FINAL: 1 0
+ALPHABET: a
+TABLE: 
+\ |  a
+--------------
+0 |  1
+1 |  1
+
+AUTOMATA(AFTER): 
+STATES: 0 1
+INIT: 0
+FINAL: 1 0
+ALPHABET: a
+TABLE: 
+\ |  a
+--------------
+0 |  1
+1 |  1
+
+AUTOMATA(Symbol(a)): 
+STATES: 0 1
+INIT: 0
+FINAL: 1
+ALPHABET: a
+TABLE: 
+\ |  a
+--------------
+0 |  1
+1 |   
+
+AUTOMATA(Symbol(a)): 
+STATES: 0 1
+INIT: 0
+FINAL: 1
+ALPHABET: a
+TABLE: 
+\ |  a
+--------------
+0 |  1
+1 |   
+
+AUTOMATA(ITER): 
+STATES: 0 1
+INIT: 0
+FINAL: 1 0
+ALPHABET: a
+TABLE: 
+\ |  a
+--------------
+0 |  1
+1 |  1
+
+AUTOMATA(Symbol(c)): 
+STATES: 0 1
+INIT: 0
+FINAL: 1
+ALPHABET: c
+TABLE: 
+\ |  c
+--------------
+0 |  1
+1 |   
+
+AUTOMATA(ITER): 
+STATES: 0 1
+INIT: 0
+FINAL: 1 0
+ALPHABET: c
+TABLE: 
+\ |  c
+--------------
+0 |  1
+1 |  1
+
+AUTOMATA(OR): 
+STATES: 0 1 2
+INIT: 0
+FINAL: 1 2 0
+ALPHABET: a c
+TABLE: 
+\ |  a |  c
+-------------------
+0 |  1 |  2
+1 |  1 |   
+2 |    |  2
+
+AUTOMATA(Symbol(b)): 
+STATES: 0 1
+INIT: 0
+FINAL: 1
+ALPHABET: b
+TABLE: 
+\ |  b
+--------------
+0 |  1
+1 |   
+
+AUTOMATA(CONCAT): 
+STATES: 0 1 2 3 4
+INIT: 0
+FINAL: 4
+ALPHABET: a c b
+TABLE: 
+\ |  a |  c |  b
+------------------------
+0 |  1 |    |   
+1 |  2 |  3 |  4
+2 |  2 |    |  4
+3 |    |  3 |  4
+4 |    |    |   
+
+AUTOMATA(Symbol(b)): 
+STATES: 0 1
+INIT: 0
+FINAL: 1
+ALPHABET: b
+TABLE: 
+\ |  b
+--------------
+0 |  1
+1 |   
+
+AUTOMATA(OR): 
+STATES: 0 1 2 3 4 5
+INIT: 0
+FINAL: 4 5
+ALPHABET: a c b
+TABLE: 
+\ |  a |  c |  b
+------------------------
+0 |  1 |    |  5
+1 |  2 |  3 |  4
+2 |  2 |    |  4
+3 |    |  3 |  4
+4 |    |    |   
+5 |    |    |   
+
+AUTOMATA(Symbol(b)): 
+STATES: 0 1
+INIT: 0
+FINAL: 1
+ALPHABET: b
+TABLE: 
+\ |  b
+--------------
+0 |  1
+1 |   
+
+AUTOMATA(ITER): 
+STATES: 0 1
+INIT: 0
+FINAL: 1 0
+ALPHABET: b
+TABLE: 
+\ |  b
+--------------
+0 |  1
+1 |  1
+
+AUTOMATA(Symbol(a)): 
+STATES: 0 1
+INIT: 0
+FINAL: 1
+ALPHABET: a
+TABLE: 
+\ |  a
+--------------
+0 |  1
+1 |   
+
+AUTOMATA(ITER): 
+STATES: 0 1
+INIT: 0
+FINAL: 1 0
+ALPHABET: a
+TABLE: 
+\ |  a
+--------------
+0 |  1
+1 |  1
+
+AUTOMATA(CONCAT): 
+STATES: 0 1 2 3 4 5 6 7
+INIT: 0
+FINAL: 7 6 4 5
+ALPHABET: a c b
+TABLE: 
+\ |  a |  c |  b
+------------------------
+0 |  1 |    |  5
+1 |  2 |  3 |  4
+2 |  2 |    |  4
+3 |    |  3 |  4
+4 |  7 |    |  6
+5 |  7 |    |  6
+6 |  7 |    |  6
+7 |  7 |    |   
+
+AUTOMATA(Symbol(a)): 
+STATES: 0 1
+INIT: 0
+FINAL: 1
+ALPHABET: a
+TABLE: 
+\ |  a
+--------------
+0 |  1
+1 |   
+
+AUTOMATA(ITER): 
+STATES: 0 1
+INIT: 0
+FINAL: 1 0
+ALPHABET: a
+TABLE: 
+\ |  a
+--------------
+0 |  1
+1 |  1
+
+AUTOMATA(OR): 
+STATES: 0 1 2 3 4 5 6 7 8
+INIT: 0
+FINAL: 7 6 4 5 8 0
+ALPHABET: a c b
+TABLE: 
+\ |   a  |  c |  b
+--------------------------
+0 |  1,8 |    |  5
+1 |   2  |  3 |  4
+2 |   2  |    |  4
+3 |      |  3 |  4
+4 |   7  |    |  6
+5 |   7  |    |  6
+6 |   7  |    |  6
+7 |   7  |    |   
+8 |   8  |    |   
+
+AUTOMATA(LOOKAHEAD): 
+STATES: 0 1 2 3 4 5 6 7 8
+INIT: 0
+FINAL: 7 6 4 5 8 0
+ALPHABET: a c b
+TABLE: 
+\ |   a  |  c |  b
+--------------------------
+0 |  1,8 |    |  5
+1 |   2  |  3 |  4
+2 |   2  |    |  4
+3 |      |  3 |  4
+4 |   7  |    |  6
+5 |   7  |    |  6
+6 |   7  |    |  6
+7 |   7  |    |   
+8 |   8  |    |   
+
+AUTOMATA(Symbol(d)): 
+STATES: 0 1
+INIT: 0
+FINAL: 1
+ALPHABET: d
+TABLE: 
+\ |  d
+--------------
+0 |  1
+1 |   
+
+AUTOMATA(ITER): 
+STATES: 0 1
+INIT: 0
+FINAL: 1 0
+ALPHABET: d
+TABLE: 
+\ |  d
+--------------
+0 |  1
+1 |  1
+
+AUTOMATA(LOOKAHEAD): 
+STATES: 0 1
+INIT: 0
+FINAL: 1 0
+ALPHABET: d
+TABLE: 
+\ |  d
+--------------
+0 |  1
+1 |  1
+
+AUTOMATA(LOOKAHEAD_INTER): 
+STATES: 0
+INIT: 0
+FINAL: 0
+ALPHABET: 
+TABLE: 
+\ | 
+------------
+0 | 
+
+AUTOMATA(INTERSECT): 
+STATES: 0
+INIT: 0
+FINAL: 0
+ALPHABET: 
+TABLE: 
+\ | 
+------------
+0 | 
+
+AUTOMATA(LOOKAHEAD_CONCAT): 
+STATES: 0
+INIT: 0
+FINAL: 0
+ALPHABET: 
+TABLE: 
+\ | 
+------------
+0 | 
+
+AUTOMATA(regexAutomata): 
+STATES: 0
+INIT: 0
+FINAL: 0
+ALPHABET: 
+TABLE: 
+\ | 
+------------
+0 | 
 

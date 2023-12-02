@@ -23,4 +23,18 @@ interface A{
     return f2(c as B).a.length
 
   }
+
+  function test(f: string, g: string, h: string){
+    return f+g+h
+  }
+  
+
+  //New mistake
+
+  const f: string = ''
+  //change ' to ` in next line
+  const g: string = `f'
+  const h: string = ` == f // `
+  
+  test(f, g, h)
  

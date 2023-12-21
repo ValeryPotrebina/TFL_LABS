@@ -1,12 +1,13 @@
 {
-  "name": "tfl_extra",
+  "name": "tfl_lab_3",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "tsc --strict --pretty index.ts  --outDir build"
+    "start": "node --loader ts-node/esm --experimental-specifier-resolution=node index.ts"
   },
+  "type": "module",
   "author": "",
   "license": "ISC",
   "devDependencies": {

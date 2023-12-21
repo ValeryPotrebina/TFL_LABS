@@ -1,0 +1,6 @@
+alphabet
+a b c d
+regex
+^a*cd*b*$
+maxlength
+10

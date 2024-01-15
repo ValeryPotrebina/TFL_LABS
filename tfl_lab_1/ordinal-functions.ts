@@ -150,6 +150,7 @@ export function removeOrdinals(composition: Operation) {
   }
 }
 
+
 export function restructureComposition(composition: Operation) {
   const stack: Operation[] = []
   stack.push(composition)

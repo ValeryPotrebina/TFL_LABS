@@ -102,6 +102,11 @@ export function compareFunctions(function1: Operation, function2: Operation) {
 // (w * a) -> a
 // (w * a * b) -> (a * b)
 
+
+// f = (w*a_1f + a_2f)x + (w*b_1f + b_2f)
+//  (w*a_1f + a_2f) >= 1 &&  (w*b_1f + b_2f) > 0
+// (w*a_1f + a_2f) > 1 (w*b_1f + b_2f) >= 0
+
 export function restrictFunctions(terms: Term[]): string{
   const normilizeValues = (operation: Operation | boolean): Operation | string => typeof(operation) == 'boolean' ? operation ? 'true' : 'false' : operation
 
@@ -111,21 +116,33 @@ export function restrictFunctions(terms: Term[]): string{
     const freeOrd = getFreeOrdinal(f)!
     console.log(freeOrd)
     const cond1 = {
-      operation: 'or',
+      operation: 'and',
       arguments: [
-        normilizeValues(compareOrdinals(xOrd, '1', '>')),
-        normilizeValues(compareOrdinals(xOrd, '1', '='))
+        {
+          operation: 'or',
+          arguments: [
+            normilizeValues(compareOrdinals(xOrd, '1', '>')),
+            normilizeValues(compareOrdinals(xOrd, '1', '='))
+          ]
+        },
+        normilizeValues(compareOrdinals(freeOrd, '0', '>'))
       ]
     }
     const cond2 = {
-      operation: 'or',
+      operation: 'and',
       arguments: [
-        normilizeValues(compareOrdinals(freeOrd, '0', '>')),
-        normilizeValues(compareOrdinals(freeOrd, '0', '='))
+        normilizeValues(compareOrdinals(xOrd, '1', '>')),
+        {
+          operation: 'or',
+          arguments: [
+            normilizeValues(compareOrdinals(freeOrd, '0', '>')),
+            normilizeValues(compareOrdinals(freeOrd, '0', '='))
+          ]
+        }
       ]
     }
     return {
-      operation: 'and',
+      operation: 'or',
       arguments: [
         cond1,
         cond2
@@ -139,6 +156,7 @@ export function restrictFunctions(terms: Term[]): string{
   
   return `(assert ${writeOperationSMT(condition)})`
 }
+
 
 export function getCoeff(wObj: Operation | string) {
   if (typeof (wObj) == 'string') {
@@ -223,9 +241,19 @@ export function getOrdinalCoeffs(ordinal: Operation | string): (string | Operati
 }
 
 
+// f = (w*a_1f + a_2f)x + (w*b_1f + b_2f)
+//  (w*a_1f + a_2f) >= 1 &&  (w*b_1f + b_2f) > 0
+// (w*a_1f + a_2f) > 1 (w*b_1f + b_2f) >= 0
+
 export function compareOrdinals(ordinal1: Operation | string, ordinal2: Operation | string, compareOperation: string): Operation | boolean {
-  const coeffs1 = getOrdinalCoeffs(ordinal1)
-  const coeffs2 = getOrdinalCoeffs(ordinal2)
+  let coeffs1 = getOrdinalCoeffs(ordinal1)
+  let coeffs2 = getOrdinalCoeffs(ordinal2)
+  if(coeffs1.length > coeffs2.length){
+    coeffs2.push(...Array.from(Array(coeffs1.length-coeffs2.length)).map(() => '0'))
+  }
+  if(coeffs2.length > coeffs1.length){
+    coeffs1.push(...Array.from(Array(coeffs2.length-coeffs1.length)).map(() => '0'))
+  }
   switch (compareOperation) {
     case '>':
       if (coeffs1.length != coeffs2.length) {

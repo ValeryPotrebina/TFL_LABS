@@ -5,16 +5,16 @@ export interface Input{
 }
 
 export interface LTable {
-  S: string[]
-  E: string[]
-  table: boolean[][]
-  extS: string[]
-  extTable: boolean[][]
+  S: string[] //prefix
+  E: string[] //suffix
+  table: boolean[][] //table - contains prefix or suffix to language? [S x E]
+  extS: string[] 
+  extTable: boolean[][] //[extS x E]
 }
 
 export interface MATResult {
   ok: boolean,
-  result: string | Automata
+  result: string | Automata //контр пример либо автомат
 }
 
 export interface Automata{

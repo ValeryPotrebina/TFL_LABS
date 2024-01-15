@@ -9,6 +9,7 @@ function main(){
   // clearLog()
   // readInput()
   const input = readInput()
+  //соответствует ли слово регулярке
   const oracul = (word: string) => input.regex.test(word)
   const l = new LTableAlgorithm(input.alphabet, oracul, config.P, input.maxLength)
   const automata = l.compute()

@@ -1,4 +1,5 @@
 import { restructureComposition } from "./ordinal-functions";
+import { createOrdinalFunction, pretifyComposition, unwrapComposition } from "./ordinal-functions";
 import { Operation, Term } from "./types";
 import { W_REGEX, writeOperation, writeOperationSMT } from "./utils";
 
@@ -51,6 +52,8 @@ export function compareFunctions(function1: Operation, function2: Operation) {
   // console.log(typeof(func2XOrdinal) =='string' ? func1XOrdinal : writeOperation(func2XOrdinal))
   // console.log(typeof(func2FreeOrdinal) =='string' ? func1XOrdinal : writeOperation(func2FreeOrdinal))
 
+  //op -> op
+  //bool -> 'true' | 'false'
   const normilizeValues = (operation: Operation | boolean): Operation | string => typeof(operation) == 'boolean' ? operation ? 'true' : 'false' : operation
 
   const greaterXOrdinals = normilizeValues(compareOrdinals(func1XOrdinal, func2XOrdinal, '>'))
@@ -58,6 +61,7 @@ export function compareFunctions(function1: Operation, function2: Operation) {
   const greaterFreeOrdinals = normilizeValues(compareOrdinals(func1FreeOrdinal, func2FreeOrdinal, '>'))
   const equalFreeOrdinals = normilizeValues(compareOrdinals(func1FreeOrdinal, func2FreeOrdinal, '='))
 
+  // (ord1_X > ord2_X) && (ord1_Free >= ord2_Free)
   const firstCondition = {
     operation: 'and',
     arguments: [
@@ -71,6 +75,8 @@ export function compareFunctions(function1: Operation, function2: Operation) {
       }
     ]
   } as Operation
+
+  // (ord1_X = ord2_X) && (ord1_Free > ord2_Free)
   const secondCondition = {
     operation: 'and',
     arguments: [
@@ -79,6 +85,9 @@ export function compareFunctions(function1: Operation, function2: Operation) {
     ]
   } as Operation
 
+  
+
+  // cond1 || cond2
   return {
     operation: 'or',
     arguments: [
@@ -86,6 +95,49 @@ export function compareFunctions(function1: Operation, function2: Operation) {
       secondCondition
     ]
   } as Operation
+}
+
+// 'w' -> '1'
+// 'a' -> 'a'
+// (w * a) -> a
+// (w * a * b) -> (a * b)
+
+export function restrictFunctions(terms: Term[]): string{
+  const normilizeValues = (operation: Operation | boolean): Operation | string => typeof(operation) == 'boolean' ? operation ? 'true' : 'false' : operation
+
+  const funcConditions = terms.map(t => {
+    const f = pretifyComposition(createOrdinalFunction(t.label))
+    const xOrd = getXOrdinal(f)!
+    const freeOrd = getFreeOrdinal(f)!
+    console.log(freeOrd)
+    const cond1 = {
+      operation: 'or',
+      arguments: [
+        normilizeValues(compareOrdinals(xOrd, '1', '>')),
+        normilizeValues(compareOrdinals(xOrd, '1', '='))
+      ]
+    }
+    const cond2 = {
+      operation: 'or',
+      arguments: [
+        normilizeValues(compareOrdinals(freeOrd, '0', '>')),
+        normilizeValues(compareOrdinals(freeOrd, '0', '='))
+      ]
+    }
+    return {
+      operation: 'and',
+      arguments: [
+        cond1,
+        cond2
+      ]
+    } as Operation
+  })
+  const condition = {
+    operation: 'and',
+    arguments: funcConditions
+  } as Operation
+  
+  return `(assert ${writeOperationSMT(condition)})`
 }
 
 export function getCoeff(wObj: Operation | string) {
@@ -111,6 +163,10 @@ export function getCoeff(wObj: Operation | string) {
   }
 }
 
+// 'w^n' -> n
+// 'a' -> 0
+// (w^n * a) -> n 
+// (a ...) -> 0
 export function getDegree(wObj: Operation | string): number | undefined {
   if (typeof (wObj) == 'string') {
     if (W_REGEX.test(wObj)) {
@@ -129,6 +185,7 @@ export function getDegree(wObj: Operation | string): number | undefined {
   }
 }
 
+// (w^3 + w^1*b + w^1*(c+d) + a) -> [a, b+c+d, 0, 1]
 export function getOrdinalCoeffs(ordinal: Operation | string): (string | Operation)[] {
   const coeffs: (string | Operation)[] = []
   if (typeof (ordinal) == 'string') {
@@ -164,6 +221,7 @@ export function getOrdinalCoeffs(ordinal: Operation | string): (string | Operati
   }
   return coeffs.map(e => e ? e : '0')
 }
+
 
 export function compareOrdinals(ordinal1: Operation | string, ordinal2: Operation | string, compareOperation: string): Operation | boolean {
   const coeffs1 = getOrdinalCoeffs(ordinal1)
@@ -241,6 +299,7 @@ export function defineVars(terms: Term[]): string{
   ]).flat(1).join('\n\n')
 }
 
+  //restrictVars Задаем неравенства на переменные для смт солвера (ограничения)
 export function restrictVars(terms: Term[]): string{
   const cond1 =  terms.map(e => [
     `(> a_1${e.label} 0)`,

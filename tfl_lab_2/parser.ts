@@ -7,7 +7,9 @@ import { logLexems, logTree } from "./utils"
 
 export function parse(data: string): Tree | undefined{
   try{
+    //сначала разбиваем на лексемы, чтобы удобнее парсить
     const lexems = new LexicalAnalyzer(data).lexicalAnalyze()
+    //затем уже строим дерево
     const tree = new SyntaxAnalyzer(lexems).parse()
     logLexems(lexems)
     logTree(tree)

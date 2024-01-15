@@ -2,6 +2,7 @@ import { Composition, Operation } from "./types"
 import { W_REGEX } from "./utils"
 
 export function createOrdinalFunction(label: string): Operation {
+  // (w * a_1(label) + a_2(label)) x + (w * b_1(label) + b_2(label))
   return {
     operation: '+',
     arguments: [
@@ -62,12 +63,15 @@ export function composeFunction(function1: Operation, function2: Operation): Ope
   return result
 }
 
+// Раскрываем 
 export function unwrapComposition(composition: Composition): Operation {
   const left = createOrdinalFunction(composition.left.label)
   const right = 'label' in composition.right ? createOrdinalFunction(composition.right.label) : unwrapComposition(composition.right)
   return pretifyComposition(composeFunction(left, right))
 }
-
+//a -> b c
+//b -> d f
+//c -> 'w'
 export function leftDistributing(composition: Operation): boolean {
   const stack: Operation[] = []
   stack.push(composition)
@@ -75,6 +79,8 @@ export function leftDistributing(composition: Operation): boolean {
     const current = stack.pop()
     if (!current) continue
     if (current.operation == '*') {
+      // (* что-то (+ ...) ...)   (* () ... )
+      // (* x (+ (* a b) (+ a b))) -> (* x a b)) + (* x (+ a b))
       const sumIdx = current.arguments.findIndex((e, i) => i > 0 && typeof (e) == 'object' && e.operation == '+')
       if (sumIdx > 0) {
         const beforeSum = current.arguments.slice(0, sumIdx)
@@ -120,6 +126,8 @@ export function removeOrdinals(composition: Operation) {
   while (stack.length) {
     const current = stack.pop()
     if (!current) continue
+
+    //(+ a b w c d w) -> (+ a w c w) -> (+ w w)
     let newArgs = (JSON.parse(JSON.stringify(current)) as Operation).arguments.filter((v, i, self) =>
       !(i < self.length - 1 &&
         (typeof (v) == 'string' && !W_REGEX.test(v)) &&
@@ -148,20 +156,25 @@ export function restructureComposition(composition: Operation) {
   while (stack.length) {
     const current = stack.pop()
     if (!current) continue
+    //(+ w)    (w + a) * b -> (+ w) * b + a
     current.arguments = current.arguments.map(e =>
       typeof (e) == 'object' && e.arguments.length == 1 ? e.arguments[0] : e
     )
+    //(a + (b + c)) -> (a + b + c)   [a op] -> [a [b c]]
     current.arguments = current.arguments.map(e => typeof (e) == 'object' && e.operation == current.operation ? e.arguments : e).flat(1)
-    for (let i = 0; i < current.arguments.length; i++) {
-      if (typeof (current.arguments[i]) == 'string' && W_REGEX.test(current.arguments[i] as string)) {
-        let j = i + 1
-        while (j < current.arguments.length && typeof (current.arguments[j]) == 'string' && W_REGEX.test(current.arguments[j] as string)) {
-          j++
-        }
-        if (j != i + 1) {
-          const degree = current.arguments.slice(i, j).map(e => e == 'w' ? 1 : parseInt((e as string).substring(2))).reduce((p, c) => p + c, 0)
-          current.arguments[i] = `w^${degree}`
-          current.arguments = current.arguments.filter((v, idx) => idx <= i || idx >= j)
+    // w * w^2 -> w^3
+    if(current.operation == '*'){
+      for (let i = 0; i < current.arguments.length; i++) {
+        if (typeof (current.arguments[i]) == 'string' && W_REGEX.test(current.arguments[i] as string)) {
+          let j = i + 1
+          while (j < current.arguments.length && typeof (current.arguments[j]) == 'string' && W_REGEX.test(current.arguments[j] as string)) {
+            j++
+          }
+          if (j != i + 1) {
+            const degree = current.arguments.slice(i, j).map(e => e == 'w' ? 1 : parseInt((e as string).substring(2))).reduce((p, c) => p + c, 0)
+            current.arguments[i] = `w^${degree}`
+            current.arguments = current.arguments.filter((v, idx) => idx <= i || idx >= j)
+          }
         }
       }
     }
@@ -184,6 +197,7 @@ export function rightDistributing(composition: Operation): boolean {
     if (current.operation == '*') {
       const sumArg = current.arguments[0]
       if (
+        //  (wb + .. + a) * b -> (wb + ... ) * b + a
         (typeof (sumArg) == 'object' && sumArg.operation == '+') &&
         ((typeof (sumArg.arguments[0]) == 'string' && W_REGEX.test(sumArg.arguments[0])) ||
           ((sumArg.arguments[0] as Operation).operation == '*' && !!(sumArg.arguments[0] as Operation).arguments.find(e => typeof (e) == 'string' && W_REGEX.test(e)))) &&
@@ -212,6 +226,7 @@ export function rightDistributing(composition: Operation): boolean {
   return false
 }
 
+
 export function pretifyComposition(composition: Operation): Operation {
   let done = true
   while (leftDistributing(composition) || rightDistributing(composition)) {
@@ -222,5 +237,9 @@ export function pretifyComposition(composition: Operation): Operation {
   removeOrdinals(composition)
 
 
+
+
   return composition
 }
+
+//

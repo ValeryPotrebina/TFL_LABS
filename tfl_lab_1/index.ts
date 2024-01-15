@@ -3,6 +3,7 @@ import { createOrdinalFunction, pretifyComposition, unwrapComposition } from "./
 import { compareFunctions, createSMTRule, defineVars, restrictVars } from "./smt-creator";
 import { Composition, Data, Operation, Rule, Term } from "./types";
 import { writeOperation } from "./utils";
+import { restrictFunctions } from "./smt-creator"
 import * as fs from 'fs';
 import * as childProcess from 'child_process'
 import config from "./config";
@@ -15,12 +16,13 @@ checkSat(config.z3Path, config.smtPath, config.outPath)
 function createSMTFile(path: string, data: Data){
   const termsSMT = defineVars(data.terms)
   const restrictTerms = restrictVars(data.terms)
+  const restrictFunc = restrictFunctions(data.terms)
   const rulesSMT = data.rules.map(rule => {
-    const left = 'label' in rule.in ? createOrdinalFunction(rule.in.label) : pretifyComposition(unwrapComposition(rule.in))
-    const right = 'label' in rule.out ? createOrdinalFunction(rule.out.label) : pretifyComposition(unwrapComposition(rule.out))
+    const left = pretifyComposition('label' in rule.in ? createOrdinalFunction(rule.in.label) : unwrapComposition(rule.in))
+    const right = pretifyComposition('label' in rule.out ? createOrdinalFunction(rule.out.label) : unwrapComposition(rule.out))
     return createSMTRule(left, right)
   }).join('\n\n')
-  const result = `${termsSMT}\n\n${restrictTerms}\n\n${rulesSMT}\n\n(check-sat)\n\n(get-model)\n\n(exit)`
+  const result = `${termsSMT}\n\n${restrictTerms}\n\n${restrictFunc}\n\n${rulesSMT}\n\n(check-sat)\n\n(get-model)\n\n(exit)`
   fs.writeFileSync(path, result)
 }
 

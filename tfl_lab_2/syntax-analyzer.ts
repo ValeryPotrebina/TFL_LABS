@@ -1,7 +1,5 @@
 import { Lexem, LexemType, LexemTypeDict, ParsingError, Tree, TreeType } from "./types"
 
-const SYMBOL_REGEX = /^[a-zA-Z0-9]$/
-const LOOKAHEAD_REGEX = /^\?=/
 
 export class SyntaxAnalyzer{
   lexems: Lexem[]
@@ -18,10 +16,6 @@ export class SyntaxAnalyzer{
     return this.position < this.length ? this.lexems[this.position] : undefined
   } 
 
-  private look(){
-    return this.position < this.length - 1 ? this.lexems[this.position + 1] : undefined
-  }
-
   private next(){
     this.position++
   }
@@ -32,16 +26,20 @@ export class SyntaxAnalyzer{
   }
   
   public parse(){
-    const tree = this.parseInit()
+    console.time('parse')
+    const tree: Tree = this.parseInit()
+    console.timeEnd('parse')
     while(this.simplify(tree)){}
     while(this.lookaheadConcatCreate(tree)){}
     return tree
   }
 
+  // упрощение просто
   private simplify(tree: Tree){
     const stack: Tree[] = [tree]
     while(stack.length){
       const current = stack.pop()!
+      //(or a b (or ...) c) -> (or a b ... c)
       if((current.type == TreeType.CONCAT || current.type == TreeType.OR)){
         const sameTypeIdx = current.children.findIndex(e => e.type == current.type) 
         if(sameTypeIdx >= 0){
@@ -57,6 +55,8 @@ export class SyntaxAnalyzer{
     return false
   }
 
+  //()|(?=)
+  //оборачивает лукахеды конкатенацией, чтобы они всегда были дочерними у конкатенации (не OR например)
   private lookaheadConcatCreate(tree: Tree){
     const stack: Tree[] = [tree]
     while(stack.length){
@@ -81,6 +81,7 @@ export class SyntaxAnalyzer{
     if(this.current()?.type != LexemType.LINE_START) throw new ParsingError(`SYNTAX ERROR: EXPECTED "^" BUT FOUND "${this.lexemToString(this.current())}"`)
     this.next()
     const first = this.parseRegex()
+    // см на грамматику внизу 
     if(this.current()?.type != LexemType.LINE_END) throw new ParsingError(`SYNTAX ERROR: EXPECTED "$" BUT FOUND "${this.lexemToString(this.current())}"`)
     return first
   }

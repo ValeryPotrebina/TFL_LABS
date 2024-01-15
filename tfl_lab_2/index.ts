@@ -5,7 +5,7 @@ import { Automata, ParsingError } from "./types"
 import * as fs from 'fs'
 import { clearLog, logAutomata } from "./utils"
 
-function main(){
+function main() {
   clearLog()
   const regex = fs.readFileSync(config.inputPath).toString()
   const tree = parse(regex)
@@ -18,10 +18,10 @@ function main(){
 
 
 
-try{
+try {
   main()
-}catch(e){
-  if(e instanceof ParsingError){
+} catch(e) {
+  if (e instanceof ParsingError) {
     console.log((e as Error).message)
-  }else throw e
+  } else throw e
 }

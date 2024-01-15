@@ -5,8 +5,9 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node --loader ts-node/esm index.ts"
+    "start": "node --loader ts-node/esm --experimental-specifier-resolution=node index.ts"
   },
+  "type": "module",
   "author": "",
   "license": "ISC",
   "devDependencies": {

@@ -1,3 +1,5 @@
+//любой символ ( ) ?= $
+//value - for symbols, type - SYMBOL, value - 'a'
 export interface Lexem{
   type: LexemType
   value: string
@@ -43,6 +45,9 @@ export const TreeTypeDict = [
   'EMPTY',
 ]
 
+//лист дерева разбора, например конкатенация, в children - что конкатенируем
+//В самом низу - листы symbol
+//value - доп инфа, например для lookahead, есть ли доллар в конце (конец строки), symbol - 'a', 'b'
 export interface Tree{
   type: TreeType
   value: string

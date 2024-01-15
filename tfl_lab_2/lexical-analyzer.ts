@@ -1,7 +1,6 @@
 import { Lexem, LexemType, ParsingError } from "./types"
 
 const SYMBOL_REGEX = /^[a-zA-Z0-9]$/
-const LOOKAHEAD_REGEX = /^\?=/
 
 export class LexicalAnalyzer{
   public data: string
@@ -24,10 +23,6 @@ export class LexicalAnalyzer{
 
   private next(){
     this.position++
-  }
-
-  private get(start: number, end: number){
-    return this.data.substring(start, end)
   }
 
   public lexicalAnalyze(): Lexem[]{

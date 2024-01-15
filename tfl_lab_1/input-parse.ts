@@ -1,6 +1,10 @@
 import { Composition, Data, Rule, Term } from "./types"
 import * as fs from 'fs';
 
+
+
+
+// parseInput - парсинг входных данныхв структуру Data
 export function parseInput(path: string): Data {
   const data: Data = {
     terms: [],
@@ -10,15 +14,26 @@ export function parseInput(path: string): Data {
   rawData.split('\n').forEach(line => {
     const sides = line.split('->')
     if (sides.length != 2) throw new Error('Wrong input')
+    //Левая и правая часть правила переписывания 
     const left = sides[0].trim()
     const right = sides[1].trim()
     if (!left.length || !right.length) throw new Error('Wrong input')
+
     data.rules.push({
       in: parseComposition(left, data.terms),
       out: parseComposition(right, data.terms)
     } as Rule)
   })
   return data
+{
+  // terms: [Term(f), Term(j), Term(h), Term(g)]
+  // rules: [
+  //   {
+  //     in: Composition(Term(f), Composition(Term(h), Term(j))) 
+  //     out: Composition(Term(g), Term(f))
+  //   }
+  // ]
+}
 }
 
 export function parseComposition(raw: string, terms: Term[]): Term | Composition {

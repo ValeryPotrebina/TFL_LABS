@@ -1,10 +1,11 @@
 import { Automata, ParsingError, Tree, TreeType } from "./types"
 import { logAutomata } from "./utils"
 
+// Своя реализация findIndex - возвращает не -1, а элемент следующий за массивом
 function findIndexFix<T>(array: T[], predicate: (value: T) => boolean) {
   return ((v: number) => v < 0 ? array.length : v)(array.findIndex(predicate))
 }
-
+ // Красивый вывод, дополняет строку пробелами слева и справа до нужной длины
 function addLeadingSpaces(e: string, count: number) {
   const spaces = count - e.length
   const rightGap = Math.floor(spaces / 2)
@@ -113,7 +114,9 @@ export function makeAutomata(tree: Tree, alphabet: string[]): Automata {
   throw new ParsingError("UNABLE TO CREATE AUTOMATA!")
 }
 
+// конкатенация автоматов (из конечных состояний первого начинаем строить второй)
 export function concatAutomata(aut1: Automata, aut2: Automata): Automata {
+  //если init то берем из первого, иначе дописываем номера состояний по порядку после состояний первого
   const aut2StateConverter = (v: number) => v == aut2.init ? aut1.final : [aut1.states + (v < aut2.init ? v : v - 1)]
   const res_aut: Automata = {
     states: aut1.states + aut2.states - 1,
@@ -122,16 +125,19 @@ export function concatAutomata(aut1: Automata, aut2: Automata): Automata {
     alphabet: [...aut1.alphabet, ...aut2.alphabet].filter((v, i, self) => self.indexOf(v) == i),
     map: Array.from(Array(aut1.states + aut2.states - 1,)).map(() => ({}))
   }
+  //заполняем map из map первого автомата
   aut1.map.forEach((e, i) => {
     for (let symbol in e) {
       if (!e[symbol]) return
       if (res_aut.map[i][symbol]) {
+        //кладем только новые состояния
         res_aut.map[i][symbol].push(...e[symbol].filter(v => !res_aut.map[i][symbol].includes(v)))
       } else {
         res_aut.map[i][symbol] = [...e[symbol]]
       }
     }
   })
+  //заполняем map из map второго автомата
   aut2.map.forEach((e, i) => {
     const targetLine = aut2StateConverter(i)
     //откуда но в новых кордах
@@ -220,7 +226,7 @@ export function intersectAutomata(aut1: Automata, aut2: Automata): Automata {
       pairs.forEach(pair => {
         const newState = pair.join(',')
         if (dict[newState] == undefined) {
-          //добавляем его в словарь и назначаем ему слудующий номер
+          //добавляем его в словарь и назначаем ему следующий номер
           dict[newState] = res_aut.states
           res_aut.map.push({})
           res_aut.states++
@@ -250,6 +256,7 @@ export function intersectAutomata(aut1: Automata, aut2: Automata): Automata {
 export function iterateAutomata(aut: Automata): Automata {
   const res_aut = JSON.parse(JSON.stringify(aut)) as Automata
   const initMoves = res_aut.map[res_aut.init]
+  //для каждого фин добавляем переходы старт-го (уник)
   res_aut.final.forEach(e => {
     res_aut.alphabet.forEach(symbol => {
       if (!initMoves[symbol]) return
@@ -260,6 +267,7 @@ export function iterateAutomata(aut: Automata): Automata {
       }
     })
   })
+  // * can be 0 times repeat
   if (!res_aut.final.includes(res_aut.init)) {
     res_aut.final.push(res_aut.init)
   }
@@ -275,7 +283,7 @@ export function determAutomata(aut: Automata): Automata {
     alphabet: aut.alphabet,
     map: [{}]
   }
-  //словарб состояний (в новом автомате состояния - подмножества (0) - init, (1,2,3) и т.д.)
+  //словарь состояний (в новом автомате состояния - подмножества (0) - init, (1,2,3) и т.д.)
   const dict: { [state: string]: number } = {}
   dict[aut.init.toString()] = 0
 
